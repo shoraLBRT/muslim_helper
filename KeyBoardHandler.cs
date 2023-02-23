@@ -11,7 +11,7 @@ namespace muslim_helper
         {
             ReplyKeyboardMarkup keyboardMarkup = new(new[]
             {
-                    new KeyboardButton[] {"Время намазов на сегодня", "Время конкретного намаза"},
+                    new KeyboardButton[] {"Время намазов на сегодня","Ближайший намаз", "Время конкретного намаза"},
                     new KeyboardButton[] {"Напоминания о намазах", "Аят дня", "Обновить аяты"}
                 })
             {
@@ -34,5 +34,6 @@ namespace muslim_helper
             };
             await botClient.SendTextMessageAsync(msg.Chat.Id, "Выбери необходимый: ", replyMarkup: keyboard);
         }
+
     }
 }

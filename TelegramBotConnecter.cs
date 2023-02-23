@@ -46,13 +46,11 @@ namespace muslim_helper
             if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message && update.Message != null)
             {
                 await messageHandler.HandleMessage(botClient, update);
-                await messageHandler.KeyboardsHandler(botClient, update);
             }
         }
         private static async Task HandlerErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             // someText
-
             Console.WriteLine(JsonConvert.SerializeObject(exception));
         }
     }

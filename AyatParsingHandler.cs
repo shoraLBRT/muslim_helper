@@ -13,7 +13,8 @@ namespace muslim_helper
     {
         private Dictionary<int, string>? kulievAyatDictionary;
 
-        string path = @"C:\Users\Альберт\Desktop\quran\fullquran.html";
+        string path = @"C:\Program Files (x86)\SHORAfiles\Project Files\muslim_helper\fullquran.html";
+
         private async Task<Dictionary<int, string>> AyatParsing()
         {
             Dictionary<int, string> result = new();
@@ -50,37 +51,35 @@ namespace muslim_helper
         }
         public async Task FormAyatDictionary()
         {
+            kulievAyatDictionary?.Clear();
             kulievAyatDictionary = await AyatParsing();
             return;
         }
         public async Task<string> GetAyatFromNumber(int numberOfAyat)
         {
             if (kulievAyatDictionary == null)
-            {
                 await FormAyatDictionary();
-            }
-            if (kulievAyatDictionary[numberOfAyat] != null)
+            if (kulievAyatDictionary[numberOfAyat] == null)
+                return "По этому индексу аят отсутствует";
+
+            string resultAyat = kulievAyatDictionary[numberOfAyat];
+            resultAyat.Trim();
+            while (resultAyat.Length <= 70)
             {
-                string resultAyat = kulievAyatDictionary[numberOfAyat];
-                resultAyat.Trim();
-                while (resultAyat.Length <= 70)
-                {
-                    numberOfAyat -= 1;
-                    resultAyat = kulievAyatDictionary[numberOfAyat] + "☪" + resultAyat;
-                }
-                while ((resultAyat[resultAyat.Length - 1] != '.') 
-                    && (resultAyat[resultAyat.Length - 1] != '!') 
-                    && (resultAyat[resultAyat.Length - 1] != '?')
-                    && (resultAyat[resultAyat.Length - 2] != '.') 
-                    && (resultAyat[resultAyat.Length - 2] != '!') 
-                    && (resultAyat[resultAyat.Length - 2] != '?'))
-                {
-                    numberOfAyat += 1;
-                    resultAyat = resultAyat + "☪" + kulievAyatDictionary[numberOfAyat];
-                }
-                return resultAyat;
+                numberOfAyat -= 1;
+                resultAyat = kulievAyatDictionary[numberOfAyat] + "☪" + resultAyat;
             }
-            return "По этому индексу аят отсутствует";
+            while ((resultAyat[resultAyat.Length - 1] != '.')
+                && (resultAyat[resultAyat.Length - 1] != '!')
+                && (resultAyat[resultAyat.Length - 1] != '?')
+                && (resultAyat[resultAyat.Length - 2] != '.')
+                && (resultAyat[resultAyat.Length - 2] != '!')
+                && (resultAyat[resultAyat.Length - 2] != '?'))
+            {
+                numberOfAyat += 1;
+                resultAyat = resultAyat + "☪" + kulievAyatDictionary[numberOfAyat];
+            }
+            return resultAyat;
         }
     }
 }
