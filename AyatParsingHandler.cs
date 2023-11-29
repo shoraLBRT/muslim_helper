@@ -1,17 +1,10 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Runtime.InteropServices;
+﻿using System.Text;
 
 namespace muslim_helper
 {
     internal class AyatParsingHandler
     {
-        private Dictionary<int, string>? kulievAyatDictionary;
+        private static Dictionary<int, string>? kulievAyatDictionary;
 
         string path = @"C:\Program Files (x86)\SHORAfiles\Project Files\muslim_helper\fullquran.html";
 
@@ -20,21 +13,19 @@ namespace muslim_helper
             Dictionary<int, string> result = new();
             using (FileStream fileStream = File.OpenRead(path))
             {
-                Console.WriteLine("filestrem is opened the File");
                 byte[] buffer = new byte[fileStream.Length];
                 if (buffer != null)
-                {     
                     Console.WriteLine("buffer is recorded");
-                }
+
                 await fileStream.ReadAsync(buffer, 0, buffer.Length);
                 string textFromFile = Encoding.Default.GetString(buffer);
                 if (textFromFile != null)
-                {
                     Console.WriteLine("textFromFile is recorded");
-                }
+
                 HtmlAgilityPack.HtmlDocument quranhtml = new();
                 quranhtml.LoadHtml(textFromFile);
                 var kulievAyatsNodes = quranhtml.DocumentNode.SelectNodes("//div[@class='container']//p[@class='ayat translate-3']/text()");
+
                 if (kulievAyatsNodes != null && kulievAyatsNodes.Count > 0)
                 {
                     for (int i = 0; i < kulievAyatsNodes.Count; i++)

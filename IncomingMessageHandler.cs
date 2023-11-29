@@ -7,45 +7,49 @@ namespace muslim_helper
     {
         KeyBoardHandler keyBoardHandler = new();
         InlineKeyboardHandler inlineKeyboard = new();
-        AyatParsingHandler ayatParsing = new();
         NamazTimesParsing namazTimes = new();
+        AyatParsingHandler ayatParsing = new();
         Random numberOfAyat = new Random();
+        //QuartzConfigurator quartzConfigurator = new QuartzConfigurator();
+        ClosestNamazFinder closestNamazFinder = new();
+        ReminderHandler reminderHandler = new();
 
 
+        DataBase dataBase = new DataBase();
+
+        public static async Task BotAnswer(ITelegramBotClient botClient, long chatID, string answerText)
+        {
+            if (chatID > 0)
+                await botClient.SendTextMessageAsync(chatID, answerText);
+        }
         public async Task HandleMessage(ITelegramBotClient botClient, Update update)
         {
             var msg = update.Message;
             if (msg.Text != null)
             {
                 string messageText = msg.Text.ToLower();
-                int num = numberOfAyat.Next(0, 400);
+                int num = numberOfAyat.Next(0, 7450);
 
                 switch (messageText)
                 {
                     case "/start":
-                        await ayatParsing.FormAyatDictionary();
                         await botClient.SendTextMessageAsync(msg.Chat, "Здравствуй! Бот преназначен для небольшой помощи мусульманам с выполнением своих основных обязанностей.\n" +
                         "для получения информации о возможностях бота, отправь мне команду /info");
                         await botClient.SendTextMessageAsync(msg.Chat, "Так же можно воспользоваться клавиатурой /keyboard");
+                        dataBase.AddUserIntoDB(msg.Chat.Username, msg.Chat.FirstName, msg.Chat.Id);
                         break;
-
                     case "/info":
                         await botClient.SendTextMessageAsync(msg.Chat,
                             "/start - для начала работы с ботом \n" +
                             "/info - для получения информации о командах бота \n" +
                             "/keyboard - для открытия клавиатуры управления ботом \n" +
                             "/namaztimes или упоминание в любом тексте слов <время намаза> - предоставит обновлённое время всех намазов \n" +
-                            "/fadjr - получение времени Фаджр намаза \n" +
-                            "/sunrise - время восхода(конец времени Фаджр намаза \n" +
-                            "/zuhr - время Зухр \n" +
-                            "/asr - время Аср \n" +
-                            "/magrib - время Магриб \n" +
-                            "/isha - время Иша");
+                            "/setreminder - поставить напоминание на ближайший намаз");
                         break;
                     case "ближайший намаз":
-                        await botClient.SendTextMessageAsync(msg.Chat, await ClosestNamazFinder.ClosestNamaz());
+                        await botClient.SendTextMessageAsync(msg.Chat, await closestNamazFinder.GetInfoAboutClosestNamaz());
                         break;
-                    case "время намазов на сегодня" or "/namaztimes":
+                    case "время намазов" or "/namaztimes":
                         string allNamaz = namazTimes.ShowAllNamazes();
                         await botClient.SendTextMessageAsync(msg.Chat, allNamaz);
                         break;
@@ -67,11 +71,10 @@ namespace muslim_helper
                     case "иша 🌃" or "/isha":
                         await botClient.SendTextMessageAsync(msg.Chat, "Время намаза Иша: " + namazTimes.ShowConcreteNamaz("Иша"));
                         break;
-                    case "аят дня":
-                        await botClient.SendTextMessageAsync(msg.Chat, "Аят дня на сегодня\n➖➖➖➖➖➖➖\n☪" + await ayatParsing.GetAyatFromNumber(num) + "\n➖➖➖➖➖➖➖\n" + num);
+                    case "случайный аят":
+                        await botClient.SendTextMessageAsync(msg.Chat, "Случайный аят из Корана\n➖➖➖➖➖➖➖\n☪" + await ayatParsing.GetAyatFromNumber(num) + "\n➖➖➖➖➖➖➖\n" + num);
                         break;
                     case "обновить аяты":
-                        await ayatParsing.FormAyatDictionary();
                         await botClient.SendTextMessageAsync(msg.Chat, "Аяты успешно обновлены");
                         break;
                     case "вернуться 🔙":
@@ -80,11 +83,23 @@ namespace muslim_helper
                     case "/keyboard":
                         await keyBoardHandler.MainKeyBoard(botClient, msg);
                         break;
-                    case "время конкретного намаза":
+                    case "намаз совершен":
                         await keyBoardHandler.NamazesKeyBoard(botClient, msg);
                         break;
                     case "напоминания о намазах":
                         await inlineKeyboard.HandleInlineKeyBoard(botClient, msg);
+                        break;
+                    case "тест":
+                        await botClient.SendTextMessageAsync(msg.Chat, closestNamazFinder.GetTimeOffsetToClosestNamaz().Result.ToString());
+                        break;
+                    case "/setreminder" or "установить напоминания о намазах":
+                        dataBase.SetNamazNotificationForUser(msg.Chat.Id, true);
+                        await botClient.SendTextMessageAsync(msg.Chat, "Уведомления о намазах <b>активированы</b> ✅", parseMode:Telegram.Bot.Types.Enums.ParseMode.Html);
+                        await botClient.SendTextMessageAsync(msg.Chat, await closestNamazFinder.GetInfoAboutClosestNamaz());
+                        break;
+                    case "/offreminder" or "отключить напоминания о намазах":
+                        dataBase.SetNamazNotificationForUser(msg.Chat.Id, false);
+                        await botClient.SendTextMessageAsync(msg.Chat, "Уведомления о намазах <b>отключены</b>.❌", parseMode:Telegram.Bot.Types.Enums.ParseMode.Html);
                         break;
                 }
             }

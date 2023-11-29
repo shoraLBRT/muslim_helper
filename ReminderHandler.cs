@@ -1,24 +1,26 @@
-﻿namespace muslim_helper
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using WorkerService1;
+
+namespace muslim_helper
 {
     internal class ReminderHandler
     {
-        //private void Notification(Object stateinfo)
-        //{
+        public async Task ReminderForCloseNamaz()
+        {
+            IHost host = Host.CreateDefaultBuilder()
+                .ConfigureServices(services =>
+                    {
+                        services.AddHostedService<BackgroundReminderService>();
+                        services.AddSingleton<IBackgroundReminderService, BackgroundReminderService>();
+                    })
+                .Build();
 
-        //}
-        //private void Timer()
-        //{
-        //    TimerCallback callback = new TimerCallback(Notification);
-
-
-
-        //    if (DateTime.Now < namazDictionaryInTimeFormat[])
-        //    {
-        //        var timer = new System.Threading.Timer(callback, null,
-        //                        //other occurrences every 24 hours
-        //                        dt - DateTime.Now, TimeSpan.FromHours(24));
-        //    }
-        //}
+            
+            await host.RunAsync();
+        }
 
     }
 }

@@ -28,6 +28,7 @@ namespace muslim_helper
         public async Task HandleCallBackQuery(ITelegramBotClient botClient, CallbackQuery callbackQuery)
         {
             await botClient.SendTextMessageAsync(callbackQuery.Message.Chat.Id, $"Ты выбрал: {callbackQuery.Data} \n К сожалению функционал напоминаний еще не готов, однако в скором времени всё будет доработано");
+            await botClient.AnswerCallbackQueryAsync(callbackQuery.Id, "Нажата кнопка " + callbackQuery.Data);
             return;
         }
     }

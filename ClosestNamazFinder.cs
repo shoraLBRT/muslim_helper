@@ -5,39 +5,77 @@
         static NamazTimesParsing namazTimes = new();
         static Dictionary<string, TimeOnly> namazDictionaryInTimeFormat = new();
         static Dictionary<string, string> namazDictionary = namazTimes.ReturnNamazDictionary();
+        
+        static TimeOnly timeOffset;
 
-        public static async Task<string> ClosestNamaz()
+        KeyValuePair<string, TimeOnly> closestNamazTime;
+        KeyValuePair<string, TimeOnly> currentNamazTime;
+
+        bool closestNamazTimeIsFajr = false;
+
+        TimeOnly currentTime = TimeOnly.MinValue;
+
+        public async Task <KeyValuePair<string,TimeOnly>> GetClosestNamaz()
+        {
+            await FindClosestNamaz();
+            return closestNamazTime;
+        }
+        public async Task<TimeOnly> FindClosestNamaz()
         {
             namazDictionaryInTimeFormat.Clear();
             await FormDictionaryInTimeFormat();
-            TimeOnly currentTime = TimeOnly.FromDateTime(DateTime.Now);
-            bool secondTimeIsFajr = false;
-            TimeOnly timeOffset;
+            currentTime = TimeOnly.FromDateTime(DateTime.Now);
 
             for (int i = 0; i < namazDictionaryInTimeFormat.Count; i++)
             {
-                var firstTime = namazDictionaryInTimeFormat.ElementAt(i);
-                var secondTime = namazDictionaryInTimeFormat.ElementAt(i);
+                currentNamazTime = namazDictionaryInTimeFormat.ElementAt(i);
+                timeOffset = TimeOnly.MinValue;
+
                 if (i + 1 >= namazDictionaryInTimeFormat.Count)
                 {
-                    secondTime = namazDictionaryInTimeFormat.ElementAt(0);
-                    secondTimeIsFajr = true;
+                    closestNamazTime = namazDictionaryInTimeFormat.ElementAt(0);
+                    closestNamazTimeIsFajr = true;
+                    return closestNamazTime.Value;
                 }
-                else secondTime = namazDictionaryInTimeFormat.ElementAt(i + 1);
+                else closestNamazTime = namazDictionaryInTimeFormat.ElementAt(i + 1);
 
-                if (!secondTimeIsFajr && currentTime.IsBetween(firstTime.Value, secondTime.Value))
+                if (!closestNamazTimeIsFajr && currentTime.IsBetween(currentNamazTime.Value, closestNamazTime.Value))
                 {
-                    timeOffset = TimeOnly.Parse(secondTime.Value.ToTimeSpan().Subtract(currentTime.ToTimeSpan()).ToString());
+                    return closestNamazTime.Value;
                 }
-                if (secondTimeIsFajr)
-                {
-                    timeOffset = TimeOnly.Parse(TimeOnly.MaxValue.ToTimeSpan().Subtract(currentTime.ToTimeSpan()).Add(secondTime.Value.ToTimeSpan()).ToString());
-                }
-                if (timeOffset != TimeOnly.MinValue)
-                    return $"{currentTime} - текущее время, сейчас время намаза {firstTime} \n" +
-                        $"Ближайший намаз - {secondTime} до него осталось {timeOffset.Hour} часов {timeOffset.Minute} минут";
             }
-            return "Непредвиденная ошибка в поиске ближайшего намаза";
+            return TimeOnly.MinValue;
+        }
+
+        public async Task<string> GetInfoAboutClosestNamaz()
+        {
+            await FindClosestNamaz();
+            await GetTimeOffsetToClosestNamaz();
+            return $@"текущее время {currentTime}, скоро {closestNamazTime}, до него осталось {timeOffset}";
+        }
+        public async Task<TimeOnly> GetTimeOffsetToClosestNamaz()
+        {
+            await FindClosestNamaz();// обновляем информацию о ближайшем намазе
+            timeOffset = TimeOnly.MinValue;// выявляем возможный эксепшен передачей минимального значения
+
+            if (!closestNamazTimeIsFajr && currentTime.IsBetween(currentNamazTime.Value, closestNamazTime.Value))
+            {
+                timeOffset = TimeOnly.FromTimeSpan(closestNamazTime.Value.ToTimeSpan().Subtract(currentTime.ToTimeSpan()));
+            }
+
+            // обработка варианта, если ближайший намаз - Фаджр
+            if (closestNamazTimeIsFajr)
+            {
+                if (currentTime >= TimeOnly.Parse("16:00"))
+                {
+                    timeOffset = TimeOnly.Parse(TimeOnly.MaxValue
+                        .Add(-currentTime.ToTimeSpan())
+                        .Add(closestNamazTime.Value.ToTimeSpan())
+                        .ToString());
+                }
+                else timeOffset = closestNamazTime.Value.Add(-currentTime.ToTimeSpan());
+            }
+            return timeOffset;
         }
         private static Task FormDictionaryInTimeFormat()
         {
@@ -46,6 +84,11 @@
                 namazDictionaryInTimeFormat.Add(concreteTime.Key, TimeOnly.Parse(concreteTime.Value));
             }
             return Task.CompletedTask;
+        }
+        public async Task<TimeSpan> TestTimeSpanGetter()
+        {
+            TimeSpan testTimeSpan = new TimeSpan(00, 00, 40);
+            return testTimeSpan;
         }
     }
 }

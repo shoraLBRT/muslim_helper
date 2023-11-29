@@ -7,7 +7,7 @@
 
         private static Dictionary<string, string>? namazTimesDictionary;
 
-        public static Dictionary<string, string>? NamazTimesDictionary { get => namazTimesDictionary; set => namazTimesDictionary = value; }
+        private static Dictionary<string, string>? NamazTimesDictionary { get => namazTimesDictionary; set => namazTimesDictionary = value; }
 
         public Dictionary<string, string> ReturnNamazDictionary()
         {

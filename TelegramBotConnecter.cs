@@ -1,11 +1,7 @@
 ﻿using Newtonsoft.Json;
-using System.Net;
-using System.Net.Security;
-using System.Reflection.Metadata;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace muslim_helper
 {
@@ -14,7 +10,7 @@ namespace muslim_helper
         IncomingMessageHandler messageHandler = new();
         InlineKeyboardHandler inlineKeyboard = new();
 
-        internal static ITelegramBotClient bot = new TelegramBotClient("5935702076:AAGlgIC03bCnH5uqRYcXX1GekpGdwPEaW-A");
+        internal static ITelegramBotClient bot = new TelegramBotClient("5873562774:AAHe8-_x--2tVwPYSrCYfq-PTwJDodqbKFA");
         internal async Task TelegramBotConneceting()
         {
             Console.WriteLine("запущен бот " + bot.GetMeAsync().Result.FirstName);
@@ -52,6 +48,11 @@ namespace muslim_helper
         {
             // someText
             Console.WriteLine(JsonConvert.SerializeObject(exception));
+        }
+
+        public static async Task<ITelegramBotClient> GetBotClient()
+        {
+            return bot;
         }
     }
 }

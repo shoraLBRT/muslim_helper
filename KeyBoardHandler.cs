@@ -1,5 +1,4 @@
 ﻿using Telegram.Bot;
-using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -11,8 +10,10 @@ namespace muslim_helper
         {
             ReplyKeyboardMarkup keyboardMarkup = new(new[]
             {
-                    new KeyboardButton[] {"Время намазов на сегодня","Ближайший намаз", "Время конкретного намаза"},
-                    new KeyboardButton[] {"Напоминания о намазах", "Аят дня", "Обновить аяты"}
+                    new KeyboardButton[] {"Намаз совершен","Случайный аят"},
+                    new KeyboardButton[] {"Время намазов","Ближайший намаз"},
+                    new KeyboardButton[] {"Отключить напоминания о намазах"},
+                    new KeyboardButton[] {"Установить напоминания о намазах"}
                 })
             {
                 ResizeKeyboard = true
@@ -34,6 +35,5 @@ namespace muslim_helper
             };
             await botClient.SendTextMessageAsync(msg.Chat.Id, "Выбери необходимый: ", replyMarkup: keyboard);
         }
-
     }
 }
