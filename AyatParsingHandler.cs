@@ -8,6 +8,11 @@ namespace muslim_helper
 
         string path = @"C:\Program Files (x86)\SHORAfiles\Project Files\muslim_helper\fullquran.html";
 
+        public AyatParsingHandler()
+        {
+            if(kulievAyatDictionary == null)
+                FormAyatDictionary();
+        }
         private async Task<Dictionary<int, string>> AyatParsing()
         {
             Dictionary<int, string> result = new();

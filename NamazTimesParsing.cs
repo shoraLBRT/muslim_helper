@@ -2,18 +2,11 @@
 {
     internal class NamazTimesParsing
     {
-        static List<string> NamazNamesList;
-        internal static string allNamazes = " ";
+        private List<string> NamazNamesList;
 
-        private static Dictionary<string, string>? namazTimesDictionary;
+        private Dictionary<string, string>? NamazTimesDictionary;
 
-        private static Dictionary<string, string>? NamazTimesDictionary { get => namazTimesDictionary; set => namazTimesDictionary = value; }
-
-        public Dictionary<string, string> ReturnNamazDictionary()
-        {
-            return NamazTimesDictionary;
-        }
-        public async Task<string> DoTheParsing()
+        public async Task<Dictionary<string, string>> DoTheParsing()
         {
             if (NamazNamesList != null)
                 NamazNamesList.Clear();
@@ -24,30 +17,9 @@
 
             NamazTimesDictionary = await Parsing(url: "https://time-in.ru/prayer/cherkessk?method=3&adjust=3&asr=0");
 
-            if (NamazTimesDictionary == null)
-                return "Парсинг не удался";
-
-            return "Успешно спарсено";
-        }
-        public string ShowConcreteNamaz(string namazName)
-        {
-            if (NamazTimesDictionary != null)
-                return NamazTimesDictionary[namazName];
-            else return "времена намаза ещё не получены";
+            return NamazTimesDictionary;
         }
 
-        public string ShowAllNamazes()
-        {
-            if (NamazTimesDictionary != null)
-            {
-                allNamazes = null;
-                foreach (var item in NamazTimesDictionary)
-                {
-                    allNamazes += item.Key + "➖➖" + item.Value + "\n";
-                }
-            }
-            return allNamazes;
-        }
         private static List<string> FormNamazNames()
         {
             List<string> namazNames = new()
@@ -61,7 +33,7 @@
             };
             return namazNames;
         }
-        private static async Task<Dictionary<string, string>> Parsing(string url)
+        private async Task<Dictionary<string, string>> Parsing(string url)
         {
             try
             {

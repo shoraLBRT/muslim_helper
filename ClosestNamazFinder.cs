@@ -2,9 +2,13 @@
 {
     internal class ClosestNamazFinder
     {
-        static NamazTimesParsing namazTimes = new();
+        public ClosestNamazFinder(NamazTimesData namazTimesData)
+        {
+            namazDictionary = namazTimesData.ReturnNamazDictionary();
+        }
+
         static Dictionary<string, TimeOnly> namazDictionaryInTimeFormat = new();
-        static Dictionary<string, string> namazDictionary = namazTimes.ReturnNamazDictionary();
+        private Dictionary<string, string> namazDictionary;
         
         static TimeOnly timeOffset;
 
@@ -77,18 +81,13 @@
             }
             return timeOffset;
         }
-        private static Task FormDictionaryInTimeFormat()
+        private Task FormDictionaryInTimeFormat()
         {
             foreach (var concreteTime in namazDictionary)
             {
                 namazDictionaryInTimeFormat.Add(concreteTime.Key, TimeOnly.Parse(concreteTime.Value));
             }
             return Task.CompletedTask;
-        }
-        public async Task<TimeSpan> TestTimeSpanGetter()
-        {
-            TimeSpan testTimeSpan = new TimeSpan(00, 00, 40);
-            return testTimeSpan;
         }
     }
 }

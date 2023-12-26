@@ -1,20 +1,27 @@
-﻿namespace muslim_helper
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace muslim_helper
 {
     internal class Program
     {
         static async Task Main(string[] args)
         {
 
-            TelegramBotConnecter botConnecter = new();
+            var services = new ServiceCollection()
+                .AddSingleton<TelegramBotConnecter>()
+                .AddTransient<AyatParsingHandler>()
+                .AddTransient<ClosestNamazFinder>()
+                .AddTransient<ReminderHandler>()
+                .AddTransient<IncomingMessageHandler>()
+                .AddTransient<InlineKeyboardHandler>()
+                .AddTransient<KeyBoardHandler>()
+                .AddTransient<DataBase>()
+                .AddTransient<NamazTimesParsing>()
+                .AddTransient<NamazTimesData>();
 
-            NamazTimesParsing timesParsing = new();
-            AyatParsingHandler ayatParsing = new();
-            ReminderHandler reminder = new();
-
-            await ayatParsing.FormAyatDictionary();
-            Console.WriteLine(await timesParsing.DoTheParsing());
-            reminder.ReminderForCloseNamaz();
-            await botConnecter.TelegramBotConneceting();
+            using var serviceProvider = services.BuildServiceProvider();
+            ReminderHandler reminderHandler = serviceProvider.GetRequiredService<ReminderHandler>();
+            TelegramBotConnecter? botConnecter = serviceProvider.GetRequiredService<TelegramBotConnecter>();
         }
 
     }

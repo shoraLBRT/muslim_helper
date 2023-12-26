@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Telegram.Bot;
-using Telegram.Bot.Types;
 using WorkerService1;
 
 namespace muslim_helper
@@ -18,7 +16,7 @@ namespace muslim_helper
                     })
                 .Build();
 
-            
+
             await host.RunAsync();
         }
 

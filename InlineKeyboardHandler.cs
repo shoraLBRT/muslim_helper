@@ -1,10 +1,9 @@
 ﻿using Telegram.Bot;
-using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace muslim_helper
-{ 
+{
     internal class InlineKeyboardHandler
     {
         public async Task HandleInlineKeyBoard(ITelegramBotClient botClient, Message msg)

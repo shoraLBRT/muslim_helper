@@ -7,11 +7,17 @@ namespace muslim_helper
 {
     internal class TelegramBotConnecter
     {
-        IncomingMessageHandler messageHandler = new();
-        InlineKeyboardHandler inlineKeyboard = new();
+        IncomingMessageHandler messageHandler;
+        InlineKeyboardHandler inlineKeyboard;
+        public TelegramBotConnecter(IncomingMessageHandler messageHandler, InlineKeyboardHandler inlineKeyboard)
+        {
+            this.messageHandler = messageHandler;
+            this.inlineKeyboard = inlineKeyboard;
+            TelegramBotConneceting();
+        }
 
-        internal static ITelegramBotClient bot = new TelegramBotClient("5873562774:AAHe8-_x--2tVwPYSrCYfq-PTwJDodqbKFA");
-        internal async Task TelegramBotConneceting()
+        private static ITelegramBotClient bot = new TelegramBotClient("5873562774:AAHe8-_x--2tVwPYSrCYfq-PTwJDodqbKFA");
+        private async Task TelegramBotConneceting()
         {
             Console.WriteLine("запущен бот " + bot.GetMeAsync().Result.FirstName);
 

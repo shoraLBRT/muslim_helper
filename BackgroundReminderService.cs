@@ -1,24 +1,21 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using muslim_helper;
-using System.Collections.Concurrent;
-using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace WorkerService1
 {
-    public class BackgroundReminderService : BackgroundService, IBackgroundReminderService
+    internal class BackgroundReminderService : BackgroundService, IBackgroundReminderService
     {
         private readonly ILogger<BackgroundReminderService> _logger;
+        private ClosestNamazFinder namazFinder;
 
-        private KeyValuePair<string, TimeOnly> _closestNamaz;
-
-        ClosestNamazFinder namazFinder = new ClosestNamazFinder();
-
-        public BackgroundReminderService(ILogger<BackgroundReminderService> logger)
+        public BackgroundReminderService(ILogger<BackgroundReminderService> logger, ClosestNamazFinder namazFinder)
         {
             _logger = logger;
+            this.namazFinder = namazFinder;
         }
+
+        private KeyValuePair<string, TimeOnly> _closestNamaz;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -28,7 +25,7 @@ namespace WorkerService1
             bool reminder1done = false;
             await Console.Out.WriteLineAsync("reminder executed");
 
-            using (var timer = new PeriodicTimer(TimeSpan.FromSeconds(60)))
+            using (var timer = new PeriodicTimer(TimeSpan.FromSeconds(10)))
             {
                 while (await timer.WaitForNextTickAsync(stoppingToken))
                 {
@@ -37,8 +34,6 @@ namespace WorkerService1
                     _closestNamaz = await namazFinder.GetClosestNamaz();
                     if (timeOffset <= TimeSpan.FromMinutes(60))
                     {
-                        await RemindToAllMembers(@$"проверка уведомлений");
-
                         if (timeOffset <= TimeSpan.FromMinutes(15))
                         {
                             await Console.Out.WriteLineAsync("<15min");
@@ -47,7 +42,7 @@ namespace WorkerService1
                                 await Console.Out.WriteLineAsync("<1min");
                                 if (!reminder1done)
                                 {
-                                    if(_closestNamaz.Key == "Восход")
+                                    if (_closestNamaz.Key == "Восход")
                                         await RemindToAllMembers(@$"наступило время {_closestNamaz}. Ближайшие 10-15 минут - нежелательны для совершения намаза!");
                                     else
                                         await RemindToAllMembers(@$"наступило время намаза {_closestNamaz}. Помни, что наилучшее деяние - намаз совершенный в начале его времени!");
@@ -69,7 +64,8 @@ namespace WorkerService1
                             reminder60done = true;
                         }
 
-                    } else if(reminder15done || reminder60done || reminder1done)
+                    }
+                    else if (reminder15done || reminder60done || reminder1done)
                     {
                         reminder60done = false; reminder15done = false; reminder1done = false;
                     }
@@ -80,7 +76,7 @@ namespace WorkerService1
                         reminder60done = false;
                         reminder1done = false;
                     }
-                    if(currentTime > _closestNamaz.Value && _closestNamaz.Key == "Фаджр")
+                    if (currentTime > _closestNamaz.Value && _closestNamaz.Key == "Фаджр")
                     {
                         await Console.Out.WriteLineAsync("следующий намаз Фаджр");
                     }
@@ -91,7 +87,7 @@ namespace WorkerService1
         private static async Task RemindToAllMembers(string text)
         {
             DataBase dataBase = new DataBase();
-            var  userCollection = dataBase.GetMembersChatIDWithActivatedNotifications();
+            var userCollection = dataBase.GetMembersChatIDWithActivatedNotifications();
             var botClient = await TelegramBotConnecter.GetBotClient();
             foreach (var user in userCollection)
             {
