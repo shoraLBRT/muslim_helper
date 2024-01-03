@@ -17,11 +17,15 @@ namespace muslim_helper
                 .AddTransient<KeyBoardHandler>()
                 .AddTransient<DataBase>()
                 .AddTransient<NamazTimesParsing>()
-                .AddTransient<NamazTimesData>();
+                .AddTransient<NamazTimesData>()
+                .AddTransient<TaskTrackingHandler>()
+                .AddTransient<NotificationHandler>()
+                .AddTransient<UsersConfigurationHandler>()
+                .AddScoped<MuslimHelperDBContext>();
 
             using var serviceProvider = services.BuildServiceProvider();
-            ReminderHandler reminderHandler = serviceProvider.GetRequiredService<ReminderHandler>();
             TelegramBotConnecter? botConnecter = serviceProvider.GetRequiredService<TelegramBotConnecter>();
+            ReminderHandler reminderHandler = serviceProvider.GetRequiredService<ReminderHandler>();
         }
 
     }

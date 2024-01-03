@@ -10,16 +10,21 @@ namespace muslim_helper
         NamazTimesData namazTimes;
         AyatParsingHandler ayatParsing;
         ClosestNamazFinder closestNamazFinder;
-        DataBase dataBase;
+        TaskTrackingHandler taskTrackingHandler;
+        NotificationHandler notificationHandler;
+        UsersConfigurationHandler usersConfigurationHandler;
         public IncomingMessageHandler(KeyBoardHandler keyBoardHandler, InlineKeyboardHandler inlineKeyboard,
-            AyatParsingHandler ayatParsing, ClosestNamazFinder closestNamazFinder, DataBase dataBase, NamazTimesData namazTimes)
+            AyatParsingHandler ayatParsing, ClosestNamazFinder closestNamazFinder, NamazTimesData namazTimes, 
+            TaskTrackingHandler taskTrackingHandler, NotificationHandler notificationHandler, UsersConfigurationHandler usersConfigurationHandler)
         {
             this.keyBoardHandler = keyBoardHandler;
             this.inlineKeyboard = inlineKeyboard;
             this.ayatParsing = ayatParsing;
             this.namazTimes = namazTimes;
             this.closestNamazFinder = closestNamazFinder;
-            this.dataBase = dataBase;
+            this.taskTrackingHandler = taskTrackingHandler;
+            this.notificationHandler = notificationHandler;
+            this.usersConfigurationHandler = usersConfigurationHandler;
         }
 
         Random numberOfAyat = new Random();
@@ -43,7 +48,7 @@ namespace muslim_helper
                         await botClient.SendTextMessageAsync(msg.Chat, "Здравствуй! Бот преназначен для небольшой помощи мусульманам с выполнением своих основных обязанностей.\n" +
                         "для получения информации о возможностях бота, отправь мне команду /info");
                         await botClient.SendTextMessageAsync(msg.Chat, "Так же можно воспользоваться клавиатурой /keyboard");
-                        dataBase.AddUserIntoDB(msg.Chat.Username, msg.Chat.FirstName, msg.Chat.Id);
+                        usersConfigurationHandler.AddUserIntoDB(msg.Chat.Username, msg.Chat.FirstName, msg.Chat.Id);
                         break;
                     case "/info":
                         await botClient.SendTextMessageAsync(msg.Chat,
@@ -51,7 +56,8 @@ namespace muslim_helper
                             "/info - для получения информации о командах бота \n" +
                             "/keyboard - для открытия клавиатуры управления ботом \n" +
                             "/namaztimes или упоминание в любом тексте слов <время намаза> - предоставит обновлённое время всех намазов \n" +
-                            "/setreminder - поставить напоминание на ближайший намаз");
+                            "/setreminder - поставить напоминание на ближайший намаз \n" +
+                            "/setnamaztracking - отслеживать выполнение намазов");
                         break;
                     case "ближайший намаз":
                         await botClient.SendTextMessageAsync(msg.Chat, await closestNamazFinder.GetInfoAboutClosestNamaz());
@@ -100,14 +106,19 @@ namespace muslim_helper
                         await botClient.SendTextMessageAsync(msg.Chat, closestNamazFinder.GetTimeOffsetToClosestNamaz().Result.ToString());
                         break;
                     case "/setreminder" or "установить напоминания о намазах":
-                        dataBase.SetNamazNotificationForUser(msg.Chat.Id, true);
+                        notificationHandler.SetNotification(msg.Chat.Id, true);
                         await botClient.SendTextMessageAsync(msg.Chat, "Уведомления о намазах <b>активированы</b> ✅", parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
                         await botClient.SendTextMessageAsync(msg.Chat, await closestNamazFinder.GetInfoAboutClosestNamaz());
                         break;
                     case "/offreminder" or "отключить напоминания о намазах":
-                        dataBase.SetNamazNotificationForUser(msg.Chat.Id, false);
+                        notificationHandler.SetNotification(msg.Chat.Id, false);
                         await botClient.SendTextMessageAsync(msg.Chat, "Уведомления о намазах <b>отключены</b>.❌", parseMode: Telegram.Bot.Types.Enums.ParseMode.Html);
                         break;
+                    case "/setnamaztracking":
+                        await taskTrackingHandler.ActivateTracking(msg.Chat.Id, true);
+                        await botClient.SendTextMessageAsync(msg.Chat, closestNamazFinder.GetTimeOffsetToClosestNamaz().Result.ToString());
+                        break;
+                        
                 }
             }
             return;
