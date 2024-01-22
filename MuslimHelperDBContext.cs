@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using muslim_helper.Entites;
 using System.Configuration;
-using Microsoft.EntityFrameworkCore;
 
 namespace muslim_helper;
 

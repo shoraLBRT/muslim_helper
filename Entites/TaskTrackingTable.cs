@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace muslim_helper;
+namespace muslim_helper.Entites;
 
 public partial class TaskTrackingTable
 {

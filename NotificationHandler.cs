@@ -1,32 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using muslim_helper.Entites;
+using Telegram.Bot.Types.Enums;
 
 namespace muslim_helper
 {
-    internal class NotificationHandler
+    internal class NotificationHandler : IResponsible
     {
         MuslimHelperDBContext dbContext;
-        public NotificationHandler(MuslimHelperDBContext dbContext)
+        ResponseHandler responseHandler;
+        public NotificationHandler(MuslimHelperDBContext dbContext, ResponseHandler responseHandler)
         {
             this.dbContext = dbContext;
+            this.responseHandler = responseHandler;
         }
 
         public void SetNotification(long userID, bool state)
         {
-            UsersTable? user = dbContext.UsersTables.Where(p=>p.Chatid == userID).FirstOrDefault();
+            UsersTable? user = dbContext.UsersTables.Where(p => p.Chatid == userID).FirstOrDefault();
             user!.NamazNotification = state;
             dbContext.Update(user);
             Console.WriteLine(@$"для юзера {user.Username} с chatID - {user.Chatid}, переменная напоминаний установлена как {state} ");
         }
-        //public void SetNamazNotificationForUser(long chatid, bool state)
-        //{
-        //    openConnection();
-        //    SqlCommand setNamazNotification = new($@"UPDATE users_table SET namaz_notification = '{state}' WHERE chatid = '{chatid}'", sqlConnection);
-        //    setNamazNotification.ExecuteNonQuery();
-        //    closeConnection();
-        //}
+        public async Task SendNotificationToMembersAsync(string answerText)
+        {
+            var mustNotified = dbContext.UsersTables.Where(u => u.NamazNotification == true);
+            foreach (var member in mustNotified)
+            {
+                await SendResponse(member.Chatid, answerText);
+            }
+        }
+        public async Task SendResponse(long chatId, string answerText, ParseMode? parseMode = default)
+        {
+            await responseHandler.SendSimpleMessage(chatId, answerText);
+        }
     }
 }

@@ -8,11 +8,13 @@ namespace WorkerService1
     {
         private readonly ILogger<BackgroundReminderService> _logger;
         private ClosestNamazFinder namazFinder;
+        NotificationHandler notificationHandler;
 
-        public BackgroundReminderService(ILogger<BackgroundReminderService> logger, ClosestNamazFinder namazFinder)
+        public BackgroundReminderService(ILogger<BackgroundReminderService> logger, ClosestNamazFinder namazFinder, NotificationHandler notificationHandler)
         {
             _logger = logger;
             this.namazFinder = namazFinder;
+            this.notificationHandler = notificationHandler;
         }
 
         private KeyValuePair<string, TimeOnly> _closestNamaz;
@@ -27,14 +29,15 @@ namespace WorkerService1
 
             using (var timer = new PeriodicTimer(TimeSpan.FromSeconds(10)))
             {
+                await Console.Out.WriteLineAsync("Обновление таймера");
                 while (await timer.WaitForNextTickAsync(stoppingToken))
                 {
                     currentTime = TimeOnly.FromDateTime(DateTime.Now);
                     var timeOffset = TimeSpan.Parse(namazFinder.GetTimeOffsetToClosestNamaz().Result.ToString());
                     _closestNamaz = await namazFinder.GetClosestNamaz();
-                    if (timeOffset <= TimeSpan.FromMinutes(60))
+                    if (timeOffset <= TimeSpan.FromMinutes(5))
                     {
-                        if (timeOffset <= TimeSpan.FromMinutes(15))
+                        if (timeOffset <= TimeSpan.FromMinutes(3))
                         {
                             await Console.Out.WriteLineAsync("<15min");
                             if (timeOffset <= TimeSpan.FromMinutes(1))
@@ -43,9 +46,9 @@ namespace WorkerService1
                                 if (!reminder1done)
                                 {
                                     if (_closestNamaz.Key == "Восход")
-                                        await RemindToAllMembers(@$"наступило время {_closestNamaz}. Ближайшие 10-15 минут - нежелательны для совершения намаза!");
+                                        await NoticeMembers(@$"наступило время {_closestNamaz}. Ближайшие 10-15 минут - нежелательны для совершения намаза!");
                                     else
-                                        await RemindToAllMembers(@$"наступило время намаза {_closestNamaz}. Помни, что наилучшее деяние - намаз совершенный в начале его времени!");
+                                        await NoticeMembers(@$"наступило время намаза {_closestNamaz}. Помни, что наилучшее деяние - намаз совершенный в начале его времени!");
                                     reminder1done = true;
                                 }
                             }
@@ -53,14 +56,14 @@ namespace WorkerService1
                             {
                                 if (!reminder15done)
                                 {
-                                    await RemindToAllMembers(@$"осталось 15 минут до {_closestNamaz}. Если ты еще не совершил прошлый намаз - поспеши!");
+                                    await NoticeMembers(@$"осталось 15 минут до {_closestNamaz}. Если ты еще не совершил прошлый намаз - поспеши!");
                                     reminder15done = true;
                                 }
                             }
                         }
                         if (!reminder60done)
                         {
-                            await RemindToAllMembers(@$"осталось {timeOffset.Minutes} минут(а) до {_closestNamaz}.");
+                            await NoticeMembers(@$"осталось {timeOffset.Minutes} минут(а) до {_closestNamaz}.");
                             reminder60done = true;
                         }
 
@@ -83,16 +86,9 @@ namespace WorkerService1
                 }
             }
         }
-
-        private static async Task RemindToAllMembers(string text)
+        private async Task NoticeMembers(string text)
         {
-            DataBase dataBase = new DataBase();
-            var userCollection = dataBase.GetMembersChatIDWithActivatedNotifications();
-            var botClient = await TelegramBotConnecter.GetBotClient();
-            foreach (var user in userCollection)
-            {
-                await IncomingMessageHandler.BotAnswer(botClient, user, text);
-            }
+            await notificationHandler.SendNotificationToMembersAsync(text);
         }
     }
 }
