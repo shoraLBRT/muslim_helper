@@ -1,6 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WorkerService1;
+using muslim_helper.AyahOfTheDay;
+using muslim_helper.DAL;
+using muslim_helper.NamazTimes;
+using muslim_helper.Reminder;
+using muslim_helper.TaskTracking;
 
 namespace muslim_helper
 {

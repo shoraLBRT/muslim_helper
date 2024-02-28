@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace muslim_helper
+namespace muslim_helper.AyahOfTheDay
 {
     internal class AyatParsingHandler
     {
@@ -10,7 +10,7 @@ namespace muslim_helper
 
         public AyatParsingHandler()
         {
-            if(kulievAyatDictionary == null)
+            if (kulievAyatDictionary == null)
                 FormAyatDictionary();
         }
         private async Task<Dictionary<int, string>> AyatParsing()
@@ -65,12 +65,12 @@ namespace muslim_helper
                 numberOfAyat -= 1;
                 resultAyat = kulievAyatDictionary[numberOfAyat] + "☪" + resultAyat;
             }
-            while ((resultAyat[resultAyat.Length - 1] != '.')
-                && (resultAyat[resultAyat.Length - 1] != '!')
-                && (resultAyat[resultAyat.Length - 1] != '?')
-                && (resultAyat[resultAyat.Length - 2] != '.')
-                && (resultAyat[resultAyat.Length - 2] != '!')
-                && (resultAyat[resultAyat.Length - 2] != '?'))
+            while (resultAyat[resultAyat.Length - 1] != '.'
+                && resultAyat[resultAyat.Length - 1] != '!'
+                && resultAyat[resultAyat.Length - 1] != '?'
+                && resultAyat[resultAyat.Length - 2] != '.'
+                && resultAyat[resultAyat.Length - 2] != '!'
+                && resultAyat[resultAyat.Length - 2] != '?')
             {
                 numberOfAyat += 1;
                 resultAyat = resultAyat + "☪" + kulievAyatDictionary[numberOfAyat];

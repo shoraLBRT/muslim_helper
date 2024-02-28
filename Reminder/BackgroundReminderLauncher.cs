@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WorkerService1;
 
-namespace muslim_helper
+namespace muslim_helper.Reminder
 {
     public class BackgroundReminderLauncher
     {

@@ -1,4 +1,4 @@
-﻿namespace muslim_helper
+﻿namespace muslim_helper.Reminder
 {
     internal interface IBackgroundReminderService
     {

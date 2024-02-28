@@ -1,4 +1,5 @@
-﻿using muslim_helper.Entites;
+﻿using muslim_helper.DAL;
+using muslim_helper.Entites;
 using Telegram.Bot.Types.Enums;
 
 namespace muslim_helper

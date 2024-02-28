@@ -2,7 +2,7 @@
 using muslim_helper.Entites;
 using System.Configuration;
 
-namespace muslim_helper;
+namespace muslim_helper.DAL;
 
 public partial class MuslimHelperDBContext : DbContext
 {

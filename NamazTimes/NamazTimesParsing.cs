@@ -1,4 +1,4 @@
-﻿namespace muslim_helper
+﻿namespace muslim_helper.NamazTimes
 {
     internal class NamazTimesParsing
     {

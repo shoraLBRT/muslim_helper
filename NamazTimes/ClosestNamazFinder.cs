@@ -1,4 +1,4 @@
-﻿namespace muslim_helper
+﻿namespace muslim_helper.NamazTimes
 {
     internal class ClosestNamazFinder
     {
@@ -9,7 +9,7 @@
 
         static Dictionary<string, TimeOnly> namazDictionaryInTimeFormat = new();
         private Dictionary<string, string> namazDictionary;
-        
+
         static TimeOnly timeOffset;
 
         KeyValuePair<string, TimeOnly> closestNamazTime;
@@ -19,7 +19,7 @@
 
         TimeOnly currentTime = TimeOnly.MinValue;
 
-        public async Task <KeyValuePair<string,TimeOnly>> GetClosestNamaz()
+        public async Task<KeyValuePair<string, TimeOnly>> GetClosestNamaz()
         {
             await FindClosestNamaz();
             return closestNamazTime;

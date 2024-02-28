@@ -1,6 +1,7 @@
-﻿using muslim_helper.Entites;
+﻿using muslim_helper.DAL;
+using muslim_helper.Entites;
 
-namespace muslim_helper
+namespace muslim_helper.TaskTracking
 {
     internal class TaskTrackingHandler
     {

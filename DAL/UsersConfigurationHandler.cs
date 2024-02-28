@@ -1,6 +1,6 @@
 ﻿using muslim_helper.Entites;
 
-namespace muslim_helper
+namespace muslim_helper.DAL
 {
     internal class UsersConfigurationHandler
     {

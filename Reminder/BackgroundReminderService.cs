@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using muslim_helper;
+using muslim_helper.NamazTimes;
 
-namespace WorkerService1
+namespace muslim_helper.Reminder
 {
     internal class BackgroundReminderService : BackgroundService, IBackgroundReminderService
     {

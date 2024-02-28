@@ -1,4 +1,8 @@
-﻿using Telegram.Bot;
+﻿using muslim_helper.AyahOfTheDay;
+using muslim_helper.DAL;
+using muslim_helper.NamazTimes;
+using muslim_helper.TaskTracking;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
