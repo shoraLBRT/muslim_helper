@@ -2,7 +2,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace muslim_helper
+namespace muslim_helper.Keyboards
 {
     internal class KeyBoardHandler
     {

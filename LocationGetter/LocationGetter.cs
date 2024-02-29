@@ -3,7 +3,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace muslim_helper
+namespace muslim_helper.LocationGetter
 {
     internal class LocationGetter
     {

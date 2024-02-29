@@ -2,7 +2,7 @@
 using muslim_helper.Entites;
 using Telegram.Bot.Types.Enums;
 
-namespace muslim_helper
+namespace muslim_helper.Notifications
 {
     internal class NotificationHandler : IResponsible
     {

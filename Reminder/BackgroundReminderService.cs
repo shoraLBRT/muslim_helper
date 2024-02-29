@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using muslim_helper.NamazTimes;
+using muslim_helper.Notifications;
 
 namespace muslim_helper.Reminder
 {
