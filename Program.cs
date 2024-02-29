@@ -7,6 +7,7 @@ using muslim_helper.NamazTimes;
 using muslim_helper.Notifications;
 using muslim_helper.Reminder;
 using muslim_helper.TaskTracking;
+using muslim_helper.UserLocation;
 
 namespace muslim_helper
 {
@@ -33,7 +34,8 @@ namespace muslim_helper
                 .AddTransient<BackgroundReminderLauncher>()
                 .AddTransient<BackgroundReminderService>()
                 .AddHostedService<BackgroundReminderService>()
-                .AddSingleton<IBackgroundReminderService, BackgroundReminderService>();
+                .AddSingleton<IBackgroundReminderService, BackgroundReminderService>()
+                .AddTransient<LocationGetter>();
 
 
 
